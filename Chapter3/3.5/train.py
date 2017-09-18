@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import utils
-import logistic_regression
+import LDA
 
-DATASET_PATH = "W_dataset/watermelon3a.txt"
+DATASET_PATH = "watermelon3a.txt"
 REPORT_EVERY = 10
 LEARNING_LOOP = 50000
 LEARNING_DECAY = True
@@ -14,9 +14,9 @@ def saveModel(path):
     pass
 
 
-def train(loop_number,learning_decay = False, learning_rate = 0.01, learning_decay_rate = 0.9):
+def train():
     samples, labels = utils.importDataset(DATASET_PATH)
-    model = logistic_regression.LogisticRegression(samples, labels, learning_rate)
+    model = LDA.LDA(samples,labels)
 
     f1 = plt.figure(1)
     plt.title('watermelon_3a')
@@ -27,27 +27,23 @@ def train(loop_number,learning_decay = False, learning_rate = 0.01, learning_dec
     plt.legend(loc='upper right')
     #plt.show()
 
-    for _ in range(loop_number):
-        if not _%REPORT_EVERY:
-            print "loop %d\n"%(_)
-            print "weights:",model.weights,"\n"
-            print "bias:",model.bias,"\n"
-        model.adjust()
-        if(learning_decay):
-            model.learning_rate *= learning_decay_rate
 
     indexx = np.arange(0.2,0.9,0.001)
     indexy = np.arange(0,0.5,0.001)
     values = np.zeros([indexy.shape[0],indexx.shape[0]])
     for x in range(values.shape[1]):
         for y in range(values.shape[0]):
-            values[y,x] = model.getclass([indexx[x],indexy[y]])
+            values[y,x] = model.getClass(np.array([indexx[x],indexy[y]]))
     plt.contour(indexx,indexy,values)
     plt.show()
-    # print indexx.shape,indexy.shape,values.shape
+    print indexx.shape,indexy.shape,values.shape
+
+    # for i in range(labels.shape[0]):
+    #     print samples[i,:],model.getClass(samples[i]),labels[i]
+    # print model.getClass(np.array([0.719,0.103]))
 
 
 
 if __name__ == "__main__":
     print "test"
-    train(LEARNING_LOOP,LEARNING_DECAY,LEARNING_RATE,LEARNING_DECAY_RATE)
+    train()
